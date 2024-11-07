@@ -1,0 +1,23 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-resource-quota
+spec:
+  rules:
+    - name: set-resource-quota
+      match:
+        resources:
+          kinds:
+            - Namespace
+      generate:
+        kind: ResourceQuota
+        name: resource-quota
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        data:
+          spec:
+            hard:
+              requests.cpu: "2"
+              requests.memory: "4Gi"
+              limits.cpu: "4"
+              limits.memory: "8Gi"
